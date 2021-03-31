@@ -15,6 +15,8 @@ import struct Dispatch.DispatchWallTime
 @_exported import OpenTelemetry
 
 /// Generates trace and span ids using a `RandomNumberGenerator` in an X-Ray compatible format.
+///
+/// - SeeAlso: [AWS X-Ray: Tracing header](https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html#xray-concepts-tracingheader)
 public struct XRayIDGenerator: OTelIDGenerator {
     private let getCurrentSecondsSinceEpoch: () -> UInt32
     private var randomNumberGenerator: RandomNumberGenerator

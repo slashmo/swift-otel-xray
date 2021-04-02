@@ -3,6 +3,9 @@ import PackageDescription
 
 let package = Package(
     name: "opentelemetry-swift-xray",
+    products: [
+        .library(name: "OpenTelemetryXRay", targets: ["OpenTelemetryXRay"]),
+    ],
     dependencies: [
         .package(url: "https://github.com/slashmo/opentelemetry-swift.git", .branch("main")),
     ],

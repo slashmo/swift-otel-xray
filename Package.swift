@@ -7,7 +7,7 @@ let package = Package(
         .library(name: "OpenTelemetryXRay", targets: ["OpenTelemetryXRay"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/slashmo/opentelemetry-swift.git", .branch("main")),
+        .package(url: "https://github.com/slashmo/opentelemetry-swift.git", .branch("automatic-context-propagation")),
     ],
     targets: [
         .target(name: "OpenTelemetryXRay", dependencies: [

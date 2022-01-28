@@ -14,7 +14,6 @@
             </strong>
             <span>Documentation</span>
         </a>
-        <sup>Beta</sup>
     </header>
 
     <!--
@@ -37,13 +36,15 @@
     <code class="name">XRay​Propagator</code>
 </h1>
 
-<html><body><pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">struct</span> <span class="type">XRayPropagator</span>: <span class="type">OTelPropagator</span></code></pre></body></html>
+<div class="declaration">
+<pre class="highlight"><code><html><body><span class="keyword">public</span> <span class="keyword">struct</span> <span class="type">XRayPropagator</span>: <span class="type">OTelPropagator</span>  </body></html></code></pre>
+</div>
 <div class="summary" role="doc-abstract">
     <p>An <code>OTelPropagator</code> that propagates span context through the <code>X-Amzn-Trace-Id</code> header.</p>
 
 </div>
 <div class="discussion">
-    <aside class="seealso">
+    <aside class="see also" title="See Also">
     <p><a href="https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html#xray-concepts-tracingheader">AWS X-Ray: Tracing Header</a></p>
 
 </aside>
@@ -104,9 +105,11 @@
 
         <div role="article" class="initializer" id="xraypropagator.init()">
     <h3>
-        <code>init()</code>
+        <code><a href="#xraypropagator.init()">init()</a></code>
     </h3>
-    <html><body><pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">init</span>()</code></pre></body></html>
+    <div class="declaration">
+<pre class="highlight"><code><html><body><span class="keyword">public</span> <span class="keyword">init</span>()  </body></html></code></pre>
+</div>
 <div class="summary" role="doc-abstract">
     <p>Initialize an X-Ray compatible propagator.</p>
 
@@ -118,15 +121,26 @@
 
         <div role="article" class="function" id="xraypropagator.inject(_:into:using:)">
     <h3>
-        <code>inject(_:​into:​using:​)</code>
+        <code><a href="#xraypropagator.inject(_:into:using:)">inject(_:​into:​using:​)</a></code>
     </h3>
-    <html><body><pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">inject</span>&lt;<span class="variable">Carrier</span>, <span class="variable">Inject</span>&gt;(<span class="keyword">_</span> <span class="variable">spanContext</span>: <span class="type">OTel</span>.<span class="type">SpanContext</span>, <span class="variable">into</span> <span class="variable">carrier</span>: <span class="keyword">inout</span> <span class="type">Carrier</span>, <span class="variable">using</span> <span class="variable">injector</span>: <span class="type">Inject</span>) <span class="keyword">where</span> <span class="type">Inject</span>: <span class="type">Injector</span>, <span class="type">Carrier</span> == <span class="type">Inject</span>.<span class="type">Carrier</span></code></pre></body></html>
+    <div class="declaration">
+<pre class="highlight"><code><html><body><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">inject</span>&lt;<span class="variable">Carrier</span>, <span class="variable">Inject</span>&gt;(
+        <span class="keyword">_</span> <span class="variable">spanContext</span>: <span class="type">OTel</span>.<span class="type">SpanContext</span>,
+        <span class="variable">into</span> <span class="variable">carrier</span>: <span class="keyword">inout</span> <span class="type">Carrier</span>,
+        <span class="variable">using</span> <span class="variable">injector</span>: <span class="type">Inject</span>
+    ) <span class="keyword">where</span> <span class="type">Inject</span>: <span class="type">Injector</span>, <span class="type">Carrier</span> == <span class="type">Inject</span>.<span class="type">Carrier</span>  </body></html></code></pre>
+</div>
 </div>
 <div role="article" class="function" id="xraypropagator.extractspancontext(from:using:)">
     <h3>
-        <code>extract​Span​Context(from:​using:​)</code>
+        <code><a href="#xraypropagator.extractspancontext(from:using:)">extract​Span​Context(from:​using:​)</a></code>
     </h3>
-    <html><body><pre class="highlight"><code><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">extractSpanContext</span>&lt;<span class="variable">Carrier</span>, <span class="variable">Extract</span>&gt;(<span class="variable">from</span> <span class="variable">carrier</span>: <span class="type">Carrier</span>, <span class="variable">using</span> <span class="variable">extractor</span>: <span class="type">Extract</span>) <span class="keyword">throws</span> -&gt; <span class="type">OTel</span>.<span class="type">SpanContext</span>? <span class="keyword">where</span> <span class="type">Extract</span>: <span class="type">Extractor</span>, <span class="type">Carrier</span> == <span class="type">Extract</span>.<span class="type">Carrier</span></code></pre></body></html>
+    <div class="declaration">
+<pre class="highlight"><code><html><body><span class="keyword">public</span> <span class="keyword">func</span> <span class="function">extractSpanContext</span>&lt;<span class="variable">Carrier</span>, <span class="variable">Extract</span>&gt;(
+        <span class="variable">from</span> <span class="variable">carrier</span>: <span class="type">Carrier</span>,
+        <span class="variable">using</span> <span class="variable">extractor</span>: <span class="type">Extract</span>
+    ) <span class="keyword">throws</span> -&gt; <span class="type">OTel</span>.<span class="type">SpanContext</span>? <span class="keyword">where</span> <span class="type">Extract</span>: <span class="type">Extractor</span>, <span class="type">Carrier</span> == <span class="type">Extract</span>.<span class="type">Carrier</span>  </body></html></code></pre>
+</div>
 </div>
     </section>
 
@@ -137,7 +151,7 @@
 
     <footer>
         <p>
-    Generated on <time datetime="2021-04-06T14:57:38+0000">April 6, 2021</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-beta.5</span>.
+    Generated on <time datetime="2022-01-28T12:59:30+0000">January 28, 2022</time> using <a href="https://github.com/SwiftDocOrg/swift-doc">swift-doc</a> <span class="version">1.0.0-rc.1</span>.
 </p>
     </footer>
 </body>

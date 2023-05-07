@@ -125,14 +125,16 @@ final class XRayPropagatorTests: XCTestCase {
         )
     }
 
-    func test_extractFails_missingSampleDecision() throws {
+    func test_extractsTracingHeader_missingSampleDecision() throws {
         let tracingHeader = "Root=1-5759e988-bd862e3fe1be46a994272793;Parent=53995c3f42cd8ad8"
         let headers = ["X-Amzn-Trace-Id": tracingHeader]
 
-        XCTAssertThrowsError(
-            try propagator.extractSpanContext(from: headers, using: extractor),
-            XRayPropagator.TraceHeaderParsingError(value: tracingHeader, reason: .missingSampleDecision)
-        )
+        let spanContext = try XCTUnwrap(propagator.extractSpanContext(from: headers, using: extractor))
+
+        XCTAssertEqual(spanContext.traceID.description, "5759e988bd862e3fe1be46a994272793")
+        XCTAssertEqual(spanContext.spanID.description, "53995c3f42cd8ad8")
+        XCTAssertTrue(spanContext.traceFlags.isEmpty)
+        XCTAssertNil(spanContext.traceState)
     }
 
     func test_extractFails_invalidTraceIDLength() throws {

@@ -9,8 +9,9 @@ jobs:
       fail-fast: false
       matrix:
         images:
-        - swift:5.3
-        - swiftlang/swift:nightly-master
+        - swift:5.7
+        - swift:5.8
+        - swiftlang/swift:nightly-main-focal
     container: ${{ matrix.images }}
     steps:
       - name: Checkout
@@ -18,4 +19,4 @@ jobs:
       - name: Resolve Swift dependencies
         run: swift package resolve
       - name: Build & Test
-        run: swift test --enable-test-discovery --parallel
+        run: swift test --parallel

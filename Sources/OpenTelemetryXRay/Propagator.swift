@@ -73,14 +73,11 @@ public struct XRayPropagator: OTelPropagator {
         guard let traceID = extractedTraceID else {
             throw TraceHeaderParsingError(value: tracingHeader, reason: .missingTraceID)
         }
-        guard let traceFlags = extractedTraceFlags else {
-            throw TraceHeaderParsingError(value: tracingHeader, reason: .missingSampleDecision)
-        }
 
         return OTel.SpanContext(
             traceID: traceID,
             spanID: spanID ?? OTel.SpanID(bytes: (0, 0, 0, 0, 0, 0, 0, 0)),
-            traceFlags: traceFlags,
+            traceFlags: extractedTraceFlags ?? [],
             isRemote: true
         )
     }
@@ -148,7 +145,5 @@ extension XRayPropagator.TraceHeaderParsingError {
         case invalidTraceIDDelimiters
 
         case invalidSpanIDLength(Int)
-
-        case missingSampleDecision
     }
 }

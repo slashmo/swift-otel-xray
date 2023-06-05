@@ -8,7 +8,7 @@ let package = Package(
         .library(name: "OpenTelemetryXRay", targets: ["OpenTelemetryXRay"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/slashmo/swift-otel.git", .upToNextMinor(from: "0.7.0")),
+        .package(url: "https://github.com/slashmo/swift-otel.git", .upToNextMinor(from: "0.8.0")),
     ],
     targets: [
         .target(name: "OpenTelemetryXRay", dependencies: [

@@ -12,19 +12,20 @@
 //===----------------------------------------------------------------------===//
 
 import struct Dispatch.DispatchWallTime
-@_exported import OpenTelemetry
+import NIOConcurrencyHelpers
+@_exported import OTel
 
 /// Generates trace and span ids using a `RandomNumberGenerator` in an X-Ray compatible format.
 ///
 /// - SeeAlso: [AWS X-Ray: Tracing header](https://docs.aws.amazon.com/xray/latest/devguide/xray-concepts.html#xray-concepts-tracingheader)
-public struct XRayIDGenerator: OTelIDGenerator {
-    private let getCurrentSecondsSinceEpoch: () -> UInt32
-    private var randomNumberGenerator: RandomNumberGenerator
+public struct XRayIDGenerator<NumberGenerator: RandomNumberGenerator & Sendable>: OTelIDGenerator {
+    private let getCurrentSecondsSinceEpoch: @Sendable () -> UInt32
+    private let randomNumberGenerator: NIOLockedValueBox<NumberGenerator>
 
     /// Initialize an X-Ray compatible `OTelIDGenerator` backed by the given `RandomNumberGenerator`.
     ///
     /// - Parameter randomNumberGenerator: The `RandomNumberGenerator` to use, defaults to a `SystemRandomNumberGenerator`.
-    public init(randomNumberGenerator: RandomNumberGenerator = SystemRandomNumberGenerator()) {
+    public init(randomNumberGenerator: NumberGenerator) {
         self.init(
             randomNumberGenerator: randomNumberGenerator,
             getCurrentSecondsSinceEpoch: {
@@ -33,35 +34,35 @@ public struct XRayIDGenerator: OTelIDGenerator {
         )
     }
 
-    init(randomNumberGenerator: RandomNumberGenerator, getCurrentSecondsSinceEpoch: @escaping () -> UInt32) {
-        self.randomNumberGenerator = randomNumberGenerator
+    init(randomNumberGenerator: NumberGenerator, getCurrentSecondsSinceEpoch: @Sendable @escaping () -> UInt32) {
+        self.randomNumberGenerator = .init(randomNumberGenerator)
         self.getCurrentSecondsSinceEpoch = getCurrentSecondsSinceEpoch
     }
 
-    public mutating func generateTraceID() -> OTel.TraceID {
-        var traceIDBytes: OTel.TraceID.Bytes = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    public func nextTraceID() -> OTelTraceID {
+        var traceIDBytes: OTelTraceID.Bytes = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         withUnsafeMutableBytes(of: &traceIDBytes) { ptr in
             ptr.storeBytes(of: self.getCurrentSecondsSinceEpoch().bigEndian, as: UInt32.self)
             ptr.storeBytes(
-                of: randomNumberGenerator.next(upperBound: UInt32.max).bigEndian,
+                of: randomNumberGenerator.withLockedValue { $0.next(upperBound: UInt32.max) }.bigEndian,
                 toByteOffset: 4,
                 as: UInt32.self
             )
             ptr.storeBytes(
-                of: randomNumberGenerator.next(upperBound: UInt64.max).bigEndian,
+                of: randomNumberGenerator.withLockedValue { $0.next(upperBound: UInt64.max) }.bigEndian,
                 toByteOffset: 8,
                 as: UInt64.self
             )
         }
-        return OTel.TraceID(bytes: traceIDBytes)
+        return OTelTraceID(bytes: traceIDBytes)
     }
 
-    public mutating func generateSpanID() -> OTel.SpanID {
-        var spanIDBytes: OTel.SpanID.Bytes = (0, 0, 0, 0, 0, 0, 0, 0)
+    public func nextSpanID() -> OTelSpanID {
+        var spanIDBytes: OTelSpanID.Bytes = (0, 0, 0, 0, 0, 0, 0, 0)
         withUnsafeMutableBytes(of: &spanIDBytes) { ptr in
-            ptr.storeBytes(of: randomNumberGenerator.next().bigEndian, as: UInt64.self)
+            ptr.storeBytes(of: randomNumberGenerator.withLockedValue { $0.next() }.bigEndian, as: UInt64.self)
         }
-        return OTel.SpanID(bytes: spanIDBytes)
+        return OTelSpanID(bytes: spanIDBytes)
     }
 }
 
@@ -69,5 +70,11 @@ extension DispatchWallTime {
     fileprivate var secondsSinceEpoch: UInt32 {
         let seconds = Int64(bitPattern: self.rawValue) / -1_000_000_000
         return UInt32(seconds)
+    }
+}
+
+extension XRayIDGenerator where NumberGenerator == SystemRandomNumberGenerator {
+    public init() {
+        self.init(randomNumberGenerator: SystemRandomNumberGenerator())
     }
 }

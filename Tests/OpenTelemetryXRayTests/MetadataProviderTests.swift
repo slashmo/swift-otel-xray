@@ -27,12 +27,14 @@ final class MetadataProviderTests: XCTestCase {
         var logger = Logger(label: "test")
         logger.handler = StreamLogHandler(label: "test", stream: stream, metadataProvider: .otelXRay)
 
-        var generator = XRayIDGenerator()
+        let generator = XRayIDGenerator()
 
-        let spanContext = OTel.SpanContext(
-            traceID: generator.generateTraceID(),
-            spanID: generator.generateSpanID(),
+        let spanContext = OTelSpanContext(
+            traceID: generator.nextTraceID(),
+            spanID: generator.nextSpanID(),
+            parentSpanID: nil,
             traceFlags: .sampled,
+            traceState: nil,
             isRemote: true
         )
 
@@ -66,12 +68,14 @@ final class MetadataProviderTests: XCTestCase {
         let metadataProvider = Logger.MetadataProvider.otelXRay(traceIDKey: "custom_trace_id", spanIDKey: "custom_span_id")
         logger.handler = StreamLogHandler(label: "test", stream: stream, metadataProvider: metadataProvider)
 
-        var generator = XRayIDGenerator()
+        let generator = XRayIDGenerator()
 
-        let spanContext = OTel.SpanContext(
-            traceID: generator.generateTraceID(),
-            spanID: generator.generateSpanID(),
+        let spanContext = OTelSpanContext(
+            traceID: generator.nextTraceID(),
+            spanID: generator.nextSpanID(),
+            parentSpanID: nil,
             traceFlags: .sampled,
+            traceState: nil,
             isRemote: true
         )
 

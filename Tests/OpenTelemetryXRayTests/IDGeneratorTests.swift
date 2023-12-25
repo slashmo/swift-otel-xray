@@ -16,26 +16,26 @@ import XCTest
 
 final class XRayIDGeneratorTests: XCTestCase {
     func test_generatesRandomTraceID() {
-        var idGenerator = XRayIDGenerator(
+        let idGenerator = XRayIDGenerator(
             randomNumberGenerator: ConstantNumberGenerator(value: .max),
             getCurrentSecondsSinceEpoch: { 1_616_064_590 }
         )
 
-        let maxTraceID = idGenerator.generateTraceID()
+        let maxTraceID = idGenerator.nextTraceID()
 
         XCTAssertEqual(
             maxTraceID,
-            OTel.TraceID(bytes: (96, 83, 48, 78, 255, 255, 255, 254, 255, 255, 255, 255, 255, 255, 255, 254))
+            OTelTraceID(bytes: (96, 83, 48, 78, 255, 255, 255, 254, 255, 255, 255, 255, 255, 255, 255, 254))
         )
     }
 
     func test_generatesRandomTraceID_withRandomNumberGenerator() {
-        var idGenerator = XRayIDGenerator(
+        let idGenerator = XRayIDGenerator(
             randomNumberGenerator: ConstantNumberGenerator(value: .random(in: 0 ..< .max)),
             getCurrentSecondsSinceEpoch: { 1_616_064_590 }
         )
 
-        let randomTraceID = idGenerator.generateTraceID()
+        let randomTraceID = idGenerator.nextTraceID()
 
         XCTAssertTrue(
             randomTraceID.description.starts(with: "6053304e"),
@@ -44,24 +44,24 @@ final class XRayIDGeneratorTests: XCTestCase {
     }
 
     func test_generatesUniqueTraceIDs() {
-        var idGenerator = XRayIDGenerator()
-        var traceIDs = Set<OTel.TraceID>()
+        let idGenerator = XRayIDGenerator()
+        var traceIDs = Set<OTelTraceID>()
 
         for _ in 0 ..< 1000 {
-            traceIDs.insert(idGenerator.generateTraceID())
+            traceIDs.insert(idGenerator.nextTraceID())
         }
 
         XCTAssertEqual(traceIDs.count, 1000, "Generating 1000 X-Ray trace ids should result in 1000 unique trace ids.")
     }
 
     func test_generatesRandomSpanID() {
-        var idGenerator = XRayIDGenerator(randomNumberGenerator: ConstantNumberGenerator(value: .max))
+        let idGenerator = XRayIDGenerator(randomNumberGenerator: ConstantNumberGenerator(value: .max))
 
-        let maxSpanID = idGenerator.generateSpanID()
+        let maxSpanID = idGenerator.nextSpanID()
 
         XCTAssertEqual(
             maxSpanID,
-            OTel.SpanID(bytes: (255, 255, 255, 255, 255, 255, 255, 255))
+            OTelSpanID(bytes: (255, 255, 255, 255, 255, 255, 255, 255))
         )
     }
 
@@ -69,19 +69,19 @@ final class XRayIDGeneratorTests: XCTestCase {
         let randomValue = UInt64.random(in: 0 ..< .max)
         let randomHexString = String(randomValue, radix: 16, uppercase: false)
         let hexString = randomHexString.count == 16 ? randomHexString : "0\(randomHexString)"
-        var idGenerator = XRayIDGenerator(randomNumberGenerator: ConstantNumberGenerator(value: randomValue))
+        let idGenerator = XRayIDGenerator(randomNumberGenerator: ConstantNumberGenerator(value: randomValue))
 
-        let randomSpanID = idGenerator.generateSpanID()
+        let randomSpanID = idGenerator.nextSpanID()
 
         XCTAssertEqual(randomSpanID.description, hexString)
     }
 
     func test_generatesUniqueSpanIDs() {
-        var idGenerator = XRayIDGenerator()
-        var spanIDs = Set<OTel.SpanID>()
+        let idGenerator = XRayIDGenerator()
+        var spanIDs = Set<OTelSpanID>()
 
         for _ in 0 ..< 1000 {
-            spanIDs.insert(idGenerator.generateSpanID())
+            spanIDs.insert(idGenerator.nextSpanID())
         }
 
         XCTAssertEqual(spanIDs.count, 1000, "Generating 1000 span ids should result in 1000 unique span ids.")

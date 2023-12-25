@@ -8,11 +8,13 @@ let package = Package(
         .library(name: "OpenTelemetryXRay", targets: ["OpenTelemetryXRay"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/slashmo/swift-otel.git", .upToNextMinor(from: "0.8.0")),
+        .package(url: "https://github.com/apple/swift-nio.git", from: "2.0.0"),
+        .package(url: "https://github.com/slashmo/swift-otel.git", branch: "main"),
     ],
     targets: [
         .target(name: "OpenTelemetryXRay", dependencies: [
-            .product(name: "OpenTelemetry", package: "swift-otel"),
+            .product(name: "NIOConcurrencyHelpers", package: "swift-nio"),
+            .product(name: "OTel", package: "swift-otel"),
         ]),
         .testTarget(name: "OpenTelemetryXRayTests", dependencies: [
             .target(name: "OpenTelemetryXRay"),

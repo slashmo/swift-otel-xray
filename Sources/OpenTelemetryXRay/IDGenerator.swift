@@ -24,7 +24,7 @@ public struct XRayIDGenerator<NumberGenerator: RandomNumberGenerator & Sendable>
 
     /// Initialize an X-Ray compatible `OTelIDGenerator` backed by the given `RandomNumberGenerator`.
     ///
-    /// - Parameter randomNumberGenerator: The `RandomNumberGenerator` to use, defaults to a `SystemRandomNumberGenerator`.
+    /// - Parameter randomNumberGenerator: The `RandomNumberGenerator` to use.
     public init(randomNumberGenerator: NumberGenerator) {
         self.init(
             randomNumberGenerator: randomNumberGenerator,
@@ -74,6 +74,7 @@ extension DispatchWallTime {
 }
 
 extension XRayIDGenerator where NumberGenerator == SystemRandomNumberGenerator {
+    /// Initialize an X-Ray compatible `OTelIDGenerator` backed by the `SystemRandomNumberGenerator`.
     public init() {
         self.init(randomNumberGenerator: SystemRandomNumberGenerator())
     }

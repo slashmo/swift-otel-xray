@@ -12,8 +12,8 @@
 //===----------------------------------------------------------------------===//
 
 @testable import Logging
-@testable import OpenTelemetryXRay
 @testable import OpenTelemetry
+@testable import OpenTelemetryXRay
 import ServiceContextModule
 import XCTest
 
@@ -26,7 +26,7 @@ final class MetadataProviderTests: XCTestCase {
         let stream = InterceptingStream()
         var logger = Logger(label: "test")
         logger.handler = StreamLogHandler(label: "test", stream: stream, metadataProvider: .otelXRay)
-        
+
         var generator = XRayIDGenerator()
 
         let spanContext = OTel.SpanContext(
@@ -44,7 +44,7 @@ final class MetadataProviderTests: XCTestCase {
 
         XCTAssertEqual(stream.strings.count, 1)
         let message = try XCTUnwrap(stream.strings.first)
-        
+
         let traceIDBytes = spanContext.traceID.hexBytes
         let timestampBytes = traceIDBytes[0 ..< 8]
         let randomBytes = traceIDBytes[8...]
@@ -83,7 +83,7 @@ final class MetadataProviderTests: XCTestCase {
 
         XCTAssertEqual(stream.strings.count, 1)
         let message = try XCTUnwrap(stream.strings.first)
-        
+
         let traceIDBytes = spanContext.traceID.hexBytes
         let timestampBytes = traceIDBytes[0 ..< 8]
         let randomBytes = traceIDBytes[8...]

@@ -25,11 +25,11 @@ extension Logger.MetadataProvider {
     public static func otelXRay(traceIDKey: String = "trace-id", spanIDKey: String = "span-id") -> Logger.MetadataProvider {
         .init {
             guard let spanContext = ServiceContext.current?.spanContext else { return [:] }
-            
+
             let traceIDBytes = spanContext.traceID.hexBytes
             let timestampBytes = traceIDBytes[0 ..< 8]
             let randomBytes = traceIDBytes[8...]
-            
+
             return [
                 traceIDKey: "1-\(String(decoding: timestampBytes, as: UTF8.self))-\(String(decoding: randomBytes, as: UTF8.self))",
                 spanIDKey: "\(spanContext.spanID)",

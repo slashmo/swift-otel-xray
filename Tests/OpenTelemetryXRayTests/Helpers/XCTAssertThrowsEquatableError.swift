@@ -12,7 +12,7 @@
 //===----------------------------------------------------------------------===//
 import XCTest
 
-public func XCTAssertThrowsError<E: Error & Equatable, T>(_ expression: @autoclosure () throws -> T, _ error: E) {
+public func XCTAssertThrowsError<E: Error & Equatable>(_ expression: @autoclosure () throws -> some Any, _ error: E) {
     do {
         let value = try expression()
         XCTFail("Expected error but received value: \(value)")

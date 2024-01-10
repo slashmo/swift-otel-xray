@@ -82,7 +82,7 @@ public struct XRayPropagator: OTelPropagator {
         )
     }
 
-    private func extractTraceID<S: StringProtocol>(_ string: S) throws -> OTel.TraceID {
+    private func extractTraceID(_ string: some StringProtocol) throws -> OTel.TraceID {
         let result = try string.utf8.withContiguousStorageIfAvailable { traceIDBytes -> OTel.TraceID in
             guard traceIDBytes.count == 35 else {
                 throw TraceHeaderParsingError(value: String(string), reason: .invalidTraceIDLength(string.count))
@@ -114,7 +114,7 @@ public struct XRayPropagator: OTelPropagator {
         return try result ?? extractTraceID(String(string))
     }
 
-    private func extractSpanID<S: StringProtocol>(_ string: S) throws -> OTel.SpanID {
+    private func extractSpanID(_ string: some StringProtocol) throws -> OTel.SpanID {
         let result = try string.utf8.withContiguousStorageIfAvailable { spanIDBytes -> OTel.SpanID in
             guard spanIDBytes.count == 16 else {
                 throw TraceHeaderParsingError(value: String(string), reason: .invalidSpanIDLength(spanIDBytes.count))

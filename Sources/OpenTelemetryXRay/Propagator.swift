@@ -1,8 +1,8 @@
 //===----------------------------------------------------------------------===//
 //
-// This source file is part of the Swift OpenTelemetry open source project
+// This source file is part of the Swift OTel open source project
 //
-// Copyright (c) 2021 Moritz Lang and the Swift OpenTelemetry project authors
+// Copyright (c) 2021 Moritz Lang and the Swift OTel project authors
 // Licensed under Apache License v2.0
 //
 // See LICENSE.txt for license information
@@ -85,7 +85,7 @@ public struct XRayPropagator: OTelPropagator {
     }
 
     private func extractTraceID(_ string: some StringProtocol) throws -> OTelTraceID {
-        let result = try string.utf8.withContiguousStorageIfAvailable { traceIDBytes -> OTel.TraceID in
+        let result = try string.utf8.withContiguousStorageIfAvailable { traceIDBytes -> OTelTraceID in
             guard traceIDBytes.count == 35 else {
                 throw TraceHeaderParsingError(value: String(string), reason: .invalidTraceIDLength(string.count))
             }
@@ -117,7 +117,7 @@ public struct XRayPropagator: OTelPropagator {
     }
 
     private func extractSpanID(_ string: some StringProtocol) throws -> OTelSpanID {
-        let result = try string.utf8.withContiguousStorageIfAvailable { spanIDBytes -> OTel.SpanID in
+        let result = try string.utf8.withContiguousStorageIfAvailable { spanIDBytes -> OTelSpanID in
             guard spanIDBytes.count == 16 else {
                 throw TraceHeaderParsingError(value: String(string), reason: .invalidSpanIDLength(spanIDBytes.count))
             }

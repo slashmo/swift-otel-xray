@@ -1,8 +1,8 @@
 //===----------------------------------------------------------------------===//
 //
-// This source file is part of the Swift OpenTelemetry open source project
+// This source file is part of the Swift OTel open source project
 //
-// Copyright (c) 2021 Moritz Lang and the Swift OpenTelemetry project authors
+// Copyright (c) 2021 Moritz Lang and the Swift OTel project authors
 // Licensed under Apache License v2.0
 //
 // See LICENSE.txt for license information

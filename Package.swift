@@ -18,6 +18,7 @@ let package = Package(
         ]),
         .testTarget(name: "OpenTelemetryXRayTests", dependencies: [
             .target(name: "OpenTelemetryXRay"),
+            .product(name: "OTel", package: "swift-otel"),
         ]),
     ]
 )

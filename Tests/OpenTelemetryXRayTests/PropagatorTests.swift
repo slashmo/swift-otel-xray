@@ -1,8 +1,8 @@
 //===----------------------------------------------------------------------===//
 //
-// This source file is part of the Swift OpenTelemetry open source project
+// This source file is part of the Swift OTel open source project
 //
-// Copyright (c) 2021 Moritz Lang and the Swift OpenTelemetry project authors
+// Copyright (c) 2021 Moritz Lang and the Swift OTel project authors
 // Licensed under Apache License v2.0
 //
 // See LICENSE.txt for license information
@@ -23,10 +23,12 @@ final class XRayPropagatorTests: XCTestCase {
     // MARK: - Inject
 
     func test_injectsTraceparentHeader_notSampled() {
-        let spanContext = OTel.SpanContext(
-            traceID: OTel.TraceID(bytes: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)),
-            spanID: OTel.SpanID(bytes: (1, 2, 3, 4, 5, 6, 7, 8)),
+        let spanContext = OTelSpanContext(
+            traceID: OTelTraceID(bytes: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)),
+            spanID: OTelSpanID(bytes: (1, 2, 3, 4, 5, 6, 7, 8)),
+            parentSpanID: nil,
             traceFlags: [],
+            traceState: nil,
             isRemote: false
         )
         var headers = [String: String]()
@@ -40,10 +42,12 @@ final class XRayPropagatorTests: XCTestCase {
     }
 
     func test_injectsTraceparentHeader_sampled() {
-        let spanContext = OTel.SpanContext(
-            traceID: OTel.TraceID(bytes: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)),
-            spanID: OTel.SpanID(bytes: (1, 2, 3, 4, 5, 6, 7, 8)),
+        let spanContext = OTelSpanContext(
+            traceID: OTelTraceID(bytes: (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)),
+            spanID: OTelSpanID(bytes: (1, 2, 3, 4, 5, 6, 7, 8)),
+            parentSpanID: nil,
             traceFlags: .sampled,
+            traceState: nil,
             isRemote: false
         )
         var headers = [String: String]()

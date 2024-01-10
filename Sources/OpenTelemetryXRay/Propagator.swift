@@ -1,8 +1,8 @@
 //===----------------------------------------------------------------------===//
 //
-// This source file is part of the Swift OpenTelemetry open source project
+// This source file is part of the Swift OTel open source project
 //
-// Copyright (c) 2021 Moritz Lang and the Swift OpenTelemetry project authors
+// Copyright (c) 2021 Moritz Lang and the Swift OTel project authors
 // Licensed under Apache License v2.0
 //
 // See LICENSE.txt for license information
@@ -12,7 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 import Instrumentation
-@_exported import OpenTelemetry
+@_exported import OTel
 
 /// An `OTelPropagator` that propagates span context through the `X-Amzn-Trace-Id` header.
 ///
@@ -24,7 +24,7 @@ public struct XRayPropagator: OTelPropagator {
     public init() {}
 
     public func inject<Carrier, Inject>(
-        _ spanContext: OTel.SpanContext,
+        _ spanContext: OTelSpanContext,
         into carrier: inout Carrier,
         using injector: Inject
     ) where Inject: Injector, Carrier == Inject.Carrier {
@@ -44,14 +44,14 @@ public struct XRayPropagator: OTelPropagator {
     public func extractSpanContext<Carrier, Extract>(
         from carrier: Carrier,
         using extractor: Extract
-    ) throws -> OTel.SpanContext? where Extract: Extractor, Carrier == Extract.Carrier {
+    ) throws -> OTelSpanContext? where Extract: Extractor, Carrier == Extract.Carrier {
         guard let tracingHeader = extractor.extract(key: Self.tracingHeader, from: carrier) else {
             return nil
         }
 
-        var extractedTraceID: OTel.TraceID?
-        var spanID: OTel.SpanID?
-        var extractedTraceFlags: OTel.TraceFlags?
+        var extractedTraceID: OTelTraceID?
+        var spanID: OTelSpanID?
+        var extractedTraceFlags: OTelTraceFlags?
 
         let parts = tracingHeader.split(separator: ";")
         var iterator = parts.makeIterator()
@@ -74,16 +74,18 @@ public struct XRayPropagator: OTelPropagator {
             throw TraceHeaderParsingError(value: tracingHeader, reason: .missingTraceID)
         }
 
-        return OTel.SpanContext(
+        return OTelSpanContext(
             traceID: traceID,
-            spanID: spanID ?? OTel.SpanID(bytes: (0, 0, 0, 0, 0, 0, 0, 0)),
+            spanID: spanID ?? OTelSpanID(bytes: (0, 0, 0, 0, 0, 0, 0, 0)),
+            parentSpanID: nil,
             traceFlags: extractedTraceFlags ?? [],
+            traceState: nil,
             isRemote: true
         )
     }
 
-    private func extractTraceID(_ string: some StringProtocol) throws -> OTel.TraceID {
-        let result = try string.utf8.withContiguousStorageIfAvailable { traceIDBytes -> OTel.TraceID in
+    private func extractTraceID(_ string: some StringProtocol) throws -> OTelTraceID {
+        let result = try string.utf8.withContiguousStorageIfAvailable { traceIDBytes -> OTelTraceID in
             guard traceIDBytes.count == 35 else {
                 throw TraceHeaderParsingError(value: String(string), reason: .invalidTraceIDLength(string.count))
             }
@@ -99,32 +101,32 @@ public struct XRayPropagator: OTelPropagator {
                 throw TraceHeaderParsingError(value: String(string), reason: .invalidTraceIDDelimiters)
             }
 
-            var traceIDStorage: OTel.TraceID.Bytes = (
+            var traceIDStorage: OTelTraceID.Bytes = (
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
             )
             withUnsafeMutableBytes(of: &traceIDStorage) { ptr in
                 let timestampRegion = UnsafeMutableRawBufferPointer(rebasing: ptr[0 ..< 4])
                 let randomRegion = UnsafeMutableRawBufferPointer(rebasing: ptr[4...])
-                OTel.Hex.convert(traceIDBytes[2 ..< 10], toBytes: timestampRegion)
-                OTel.Hex.convert(traceIDBytes[11 ..< 35], toBytes: randomRegion)
+                Hex.convert(traceIDBytes[2 ..< 10], toBytes: timestampRegion)
+                Hex.convert(traceIDBytes[11 ..< 35], toBytes: randomRegion)
             }
 
-            return OTel.TraceID(bytes: traceIDStorage)
+            return OTelTraceID(bytes: traceIDStorage)
         }
         return try result ?? extractTraceID(String(string))
     }
 
-    private func extractSpanID(_ string: some StringProtocol) throws -> OTel.SpanID {
-        let result = try string.utf8.withContiguousStorageIfAvailable { spanIDBytes -> OTel.SpanID in
+    private func extractSpanID(_ string: some StringProtocol) throws -> OTelSpanID {
+        let result = try string.utf8.withContiguousStorageIfAvailable { spanIDBytes -> OTelSpanID in
             guard spanIDBytes.count == 16 else {
                 throw TraceHeaderParsingError(value: String(string), reason: .invalidSpanIDLength(spanIDBytes.count))
             }
 
-            var bytes: OTel.SpanID.Bytes = (0, 0, 0, 0, 0, 0, 0, 0)
+            var bytes: OTelSpanID.Bytes = (0, 0, 0, 0, 0, 0, 0, 0)
             withUnsafeMutableBytes(of: &bytes) { ptr in
-                OTel.Hex.convert(spanIDBytes, toBytes: ptr)
+                Hex.convert(spanIDBytes, toBytes: ptr)
             }
-            return OTel.SpanID(bytes: bytes)
+            return OTelSpanID(bytes: bytes)
         }
         return try result ?? extractSpanID(String(string))
     }

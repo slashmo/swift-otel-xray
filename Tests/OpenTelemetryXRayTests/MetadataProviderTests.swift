@@ -1,8 +1,8 @@
 //===----------------------------------------------------------------------===//
 //
-// This source file is part of the Swift OpenTelemetry open source project
+// This source file is part of the Swift OTel open source project
 //
-// Copyright (c) 2021 Moritz Lang and the Swift OpenTelemetry project authors
+// Copyright (c) 2021 Moritz Lang and the Swift OTel project authors
 // Licensed under Apache License v2.0
 //
 // See LICENSE.txt for license information
@@ -12,8 +12,8 @@
 //===----------------------------------------------------------------------===//
 
 @testable import Logging
-@testable import OpenTelemetry
 @testable import OpenTelemetryXRay
+@testable import OTel
 import ServiceContextModule
 import XCTest
 
@@ -27,12 +27,14 @@ final class MetadataProviderTests: XCTestCase {
         var logger = Logger(label: "test")
         logger.handler = StreamLogHandler(label: "test", stream: stream, metadataProvider: .otelXRay)
 
-        var generator = XRayIDGenerator()
+        let generator = XRayIDGenerator()
 
-        let spanContext = OTel.SpanContext(
-            traceID: generator.generateTraceID(),
-            spanID: generator.generateSpanID(),
+        let spanContext = OTelSpanContext(
+            traceID: generator.nextTraceID(),
+            spanID: generator.nextSpanID(),
+            parentSpanID: nil,
             traceFlags: .sampled,
+            traceState: nil,
             isRemote: true
         )
 
@@ -66,12 +68,14 @@ final class MetadataProviderTests: XCTestCase {
         let metadataProvider = Logger.MetadataProvider.otelXRay(traceIDKey: "custom_trace_id", spanIDKey: "custom_span_id")
         logger.handler = StreamLogHandler(label: "test", stream: stream, metadataProvider: metadataProvider)
 
-        var generator = XRayIDGenerator()
+        let generator = XRayIDGenerator()
 
-        let spanContext = OTel.SpanContext(
-            traceID: generator.generateTraceID(),
-            spanID: generator.generateSpanID(),
+        let spanContext = OTelSpanContext(
+            traceID: generator.nextTraceID(),
+            spanID: generator.nextSpanID(),
+            parentSpanID: nil,
             traceFlags: .sampled,
+            traceState: nil,
             isRemote: true
         )
 

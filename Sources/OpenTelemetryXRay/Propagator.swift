@@ -140,7 +140,7 @@ extension XRayPropagator {
 }
 
 extension XRayPropagator.TraceHeaderParsingError {
-    public enum Reason: Equatable {
+    public enum Reason: Equatable, Sendable {
         case missingTraceID
         case invalidTraceIDLength(Int)
         case unsupportedTraceIDVersion(String)
